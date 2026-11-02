@@ -132,10 +132,11 @@ section.block { padding-block: var(--space-6); }
 .commit div { border-top: 3px solid var(--safety); padding-top: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
 .commit p { font-size: 14px; line-height: 22px; color: var(--ink-muted); }
 
-.leader { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: var(--space-5); align-items: start; }
-@media (max-width: 760px) { .leader { grid-template-columns: 1fr; } }
-.photo { aspect-ratio: 4 / 5; max-width: 100%; background: var(--steel); border: 1.5px dashed var(--line-strong); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; text-align: center; padding: var(--space-4); color: var(--ink-muted); font-size: 14px; line-height: 20px; }
-.leader-copy { display: flex; flex-direction: column; gap: var(--space-3); max-width: 640px; }
+.leader { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: var(--space-5); align-items: start; }
+@media (max-width: 860px) { .leader { grid-template-columns: minmax(0, 1fr); } }
+.headshot { width: 100%; max-width: 340px; height: auto; display: block; border-radius: var(--radius-lg); }
+@media (max-width: 860px) { .headshot { width: min(100%, 300px); max-width: 300px; margin-inline: auto; } }
+.leader-copy { display: flex; flex-direction: column; gap: var(--space-3); max-width: none; min-width: 0; }
 .note { font-size: 14px; line-height: 22px; color: var(--ink-muted); border-left: 0; background: var(--steel); padding: 12px var(--space-3); border-radius: var(--radius-sm); }
 .leader-copy ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: var(--space-2); }
 
@@ -176,7 +177,7 @@ dd { margin: 0; font-family: var(--font-mono); font-size: 14px; line-height: 20p
 table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
 th { text-align: left; font-weight: 600; color: var(--ink-muted); padding: 0 12px 10px 0; border-bottom: 1px solid var(--line-strong); }
 td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-td.mono { white-space: nowrap; }
+td.mono { white-space: normal; }
 
 .contact { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: var(--space-5); }
 @media (max-width: 860px) { .contact { grid-template-columns: 1fr; } }
@@ -209,14 +210,36 @@ footer .legal strong { color: var(--band-ink); font-weight: 600; }
 .facts .sans { font-family: var(--font-sans); font-weight: 600; }
 @media (max-width: 480px) { .facts dl { grid-template-columns: 1fr; } }
 @media (max-width: 900px) {
-  nav { display: block; order: 3; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: -4px; }
-  nav ul { flex-wrap: nowrap; gap: var(--space-4); padding-bottom: 2px; }
-  nav a { white-space: nowrap; }
+  nav { display: block; order: 3; width: 100%; min-width: 0; }
+  nav ul { flex-wrap: wrap; gap: 0 var(--space-3); }
+  nav a { display: inline-flex; align-items: center; min-height: 44px; white-space: normal; }
 }
 .contact.solo { grid-template-columns: 1fr; }
 .contact.solo .contact-lines { flex-direction: row; flex-wrap: wrap; gap: var(--space-4) var(--space-6); }
-.leader.solo { grid-template-columns: 1fr; }
 abbr[title] { text-decoration: none; }
+nav a { display: inline-flex; align-items: center; min-height: 44px; }
+.pill { flex-wrap: wrap; max-width: 100%; }
+.bar .btn, .actions .btn { max-width: 100%; min-width: 0; white-space: normal; text-align: center; }
+.table-scroll { max-width: 100%; }
+th, td { overflow-wrap: break-word; }
+.contact-lines .value, .contact-lines .value a { overflow-wrap: anywhere; }
+a[href^="tel:"], a[href^="mailto:"] { position: relative; }
+a[href^="tel:"]::after, a[href^="mailto:"]::after { content: ""; position: absolute; left: -4px; right: -4px; top: 50%; height: 44px; transform: translateY(-50%); }
+form, .field, input, select, textarea { max-width: 100%; }
+@media (max-width: 1100px) {
+  .band-inner { max-width: min(620px, 66%); }
+}
+@media (max-width: 820px) {
+  .stripes { display: none; }
+  .band-inner { max-width: 620px; }
+}
+@media (max-width: 560px) {
+  .bar { flex-direction: column; align-items: stretch; gap: var(--space-3); }
+  .bar .brand { align-self: flex-start; }
+  .bar .btn { justify-content: center; }
+  .actions { flex-direction: column; align-items: stretch; }
+  .actions .btn { justify-content: center; }
+}
 </style>
 </head>
 <body>
@@ -320,7 +343,7 @@ abbr[title] { text-decoration: none; }
         <p class="eyebrow">Leadership</p>
         <h2>Owner-run, start to finish.</h2>
       </div>
-      <div class="leader solo">
+      <div class="leader">
         <div class="leader-copy">
           <h3>Nate Niehuus, Owner</h3>
           <p class="note">Double N Works was formed in October 2026 and has no company past performance yet. The experience below is our principal's.</p>
@@ -331,6 +354,7 @@ abbr[title] { text-decoration: none; }
             <li><b>Business.</b> Has founded and run three companies since leaving the Army. Executive MBA candidate, McCombs School of Business, UT Austin (2027). Licensed commercial real estate agent focused on industrial property, so he understands buildings, leases and operating costs from the owner's side.</li>
           </ul>
         </div>
+        <img class="headshot" src="/images/nate-niehuus.webp" width="600" height="800" alt="Nate Niehuus, Owner of Double N Works" decoding="async" loading="lazy">
       </div>
     </section>
   </div>
