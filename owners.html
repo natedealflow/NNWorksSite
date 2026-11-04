@@ -222,8 +222,12 @@ form, .field, input, select, textarea { max-width: 100%; }
   .actions { flex-direction: column; align-items: stretch; }
   .actions .btn { justify-content: center; }
 }
-.hero-owners { grid-template-columns: minmax(0, 1fr); }
+.hero-owners { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: center; }
+.hero-owners .about { grid-column: 1 / -1; }
+.hero-owners .video { aspect-ratio: 4 / 3; width: 100%; max-width: 460px; justify-self: end; }
+@media (max-width: 820px) { .hero-owners .video { justify-self: stretch; max-width: 560px; } }
 .video { position: relative; aspect-ratio: 16 / 9; max-width: 100%; border-radius: var(--radius-lg); overflow: hidden; background: var(--gunmetal); }
+.video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .video-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-2); color: var(--band-ink); text-align: center; padding: var(--space-4); }
 .video-placeholder svg { width: 64px; height: 64px; color: var(--band-accent); }
@@ -297,6 +301,11 @@ form, .field, input, select, textarea { max-width: 100%; }
           <a class="btn btn-primary" href="#talk">Start a confidential conversation</a>
           <a class="btn btn-secondary" href="#buy">What I'm looking for</a>
         </div>
+      </div>
+      <div class="video">
+        <video controls playsinline preload="metadata" poster="/video/owners-intro-poster.webp" title="A message from Nate Niehuus">
+          <source src="/video/owners-intro.mp4" type="video/mp4">
+        </video>
       </div>
       <aside class="about" aria-label="About Nate">
         <div class="about-copy">
