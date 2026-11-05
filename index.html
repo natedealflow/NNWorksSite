@@ -239,6 +239,19 @@ th, td { overflow-wrap: break-word; }
 a[href^="tel:"], a[href^="mailto:"] { position: relative; }
 a[href^="tel:"]::after, a[href^="mailto:"]::after { content: ""; position: absolute; left: -4px; right: -4px; top: 50%; height: 44px; transform: translateY(-50%); }
 form, .field, input, select, textarea { max-width: 100%; }
+.contact-intro { display: flex; flex-direction: column; gap: var(--space-4); }
+.contact-intro .section-head { margin-bottom: 0; }
+.contact-intro .contact-lines { flex-direction: column; gap: var(--space-3); }
+.contact-form { background: var(--steel); border-radius: var(--radius-lg); padding: var(--space-4); align-self: start; }
+.contact-form .opt { font-weight: 400; color: var(--ink-muted); }
+.contact-form .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.contact-form .form-foot { flex-direction: row; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+.contact-form .form-note { font-size: 13px; line-height: 18px; color: var(--ink-muted); margin: 0; flex: 1 1 220px; }
+.contact-form .form-msg:empty { display: none; }
+.contact-form .form-msg.ok { color: var(--ink); font-weight: 600; }
+.contact-form .form-msg.err { color: var(--safety-text); font-weight: 600; }
+.contact-form button[disabled] { opacity: .6; cursor: wait; }
+
 @media (max-width: 1100px) {
   .band-inner { max-width: min(620px, 66%); }
 }
@@ -435,18 +448,38 @@ form, .field, input, select, textarea { max-width: 100%; }
     </section>
 
     <section class="block" id="contact" style="padding-top: 0">
-      <div class="section-head">
-        <p class="eyebrow">Contact</p>
-        <h2>Talk to Nate directly.</h2>
-        <p class="muted">Contracting officers, CORs, small business specialists and primes: you will get a reply within one business day.</p>
-      </div>
-      <div class="contact solo">
-        <div class="contact-lines">
-          <div class="row"><span class="label">Email</span><span class="value"><a href="mailto:nate@doublenworks.com">nate@doublenworks.com</a></span></div>
-          <div class="row"><span class="label">Phone</span><span class="value"><a href="tel:+15122708881">(512) 270-8881</a></span></div>
-          <div class="row"><span class="label">Location</span><span class="value">Austin, TX</span></div>
+      <div class="contact">
+        <div class="contact-intro">
+          <div class="section-head">
+            <p class="eyebrow">Contact</p>
+            <h2>Talk to Nate directly.</h2>
+            <p class="muted">Contracting officers, CORs, small business specialists and primes: you will get a reply within one business day.</p>
+          </div>
+          <div class="contact-lines">
+            <div class="row"><span class="label">Email</span><span class="value"><a href="mailto:nate@doublenworks.com">nate@doublenworks.com</a></span></div>
+            <div class="row"><span class="label">Phone</span><span class="value"><a href="tel:+15122708881">(512) 270-8881</a></span></div>
+            <div class="row"><span class="label">Location</span><span class="value">Austin, TX</span></div>
+          </div>
         </div>
-        <!-- Contact form returns here once Formspree is connected (see index.html v6 in 03 Archive). -->
+        <form class="contact-form" id="contact-form" action="/api/contact" method="post" novalidate>
+          <div class="field"><label for="cf-name">Name</label><input id="cf-name" name="name" autocomplete="name" maxlength="120" required></div>
+          <div class="field"><label for="cf-org">Organization or agency</label><input id="cf-org" name="organization" autocomplete="organization" maxlength="160"></div>
+          <div class="field"><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" autocomplete="email" maxlength="200" required></div>
+          <div class="field"><label for="cf-phone">Phone <span class="opt">(optional)</span></label><input id="cf-phone" name="phone" type="tel" autocomplete="tel" maxlength="40"></div>
+          <div class="field"><label for="cf-role">Your role</label>
+            <select id="cf-role" name="role">
+              <option>Contracting officer</option><option>COR</option><option>Small business specialist</option><option>Prime contractor</option><option>Business owner</option><option>Other</option>
+            </select></div>
+          <div class="field"><label for="cf-ref">Solicitation or contract no. <span class="opt">(optional)</span></label><input id="cf-ref" name="reference" maxlength="120"></div>
+          <div class="field full"><label for="cf-msg">Message</label><textarea id="cf-msg" name="message" maxlength="5000" required></textarea></div>
+          <div class="hp" aria-hidden="true"><label for="cf-website">Website</label><input id="cf-website" name="website" tabindex="-1" autocomplete="off"></div>
+          <input type="hidden" name="elapsed" value="">
+          <div class="field full form-foot">
+            <button class="btn btn-primary" type="submit">Send message</button>
+            <p class="form-note">Please do not include CUI, classified or proprietary information.</p>
+          </div>
+          <p class="form-msg" id="cf-status" role="status" aria-live="polite"></p>
+        </form>
       </div>
     </section>
   </div>
@@ -464,5 +497,28 @@ form, .field, input, select, textarea { max-width: 100%; }
   </div>
 </footer>
 
+<script>
+(function () {
+  var f = document.getElementById('contact-form'); if (!f) return;
+  var st = document.getElementById('cf-status'), btn = f.querySelector('button[type=submit]'), t0 = Date.now();
+  var q = new URLSearchParams(location.search).get('sent');
+  if (q === '1') { st.textContent = 'Thanks, your message was sent. Nate will reply within one business day.'; st.className = 'form-msg ok'; }
+  if (q === '0') { st.textContent = 'Your message did not send. Please email nate@doublenworks.com.'; st.className = 'form-msg err'; }
+  f.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    f.elements.elapsed.value = String(Date.now() - t0);
+    if (!f.checkValidity()) { st.textContent = 'Please add your name, a valid email and a message.'; st.className = 'form-msg err'; f.reportValidity(); return; }
+    var data = Object.fromEntries(new FormData(f).entries());
+    btn.disabled = true; btn.textContent = 'Sending...'; st.textContent = ''; st.className = 'form-msg';
+    try {
+      var r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data) });
+      var j = await r.json().catch(function () { return {}; });
+      if (r.ok && j.ok) { f.reset(); st.textContent = 'Thanks, your message was sent. Nate will reply within one business day.'; st.className = 'form-msg ok'; }
+      else { st.textContent = j.error || 'Your message did not send. Please email nate@doublenworks.com.'; st.className = 'form-msg err'; }
+    } catch (err) { st.textContent = 'Your message did not send. Please email nate@doublenworks.com.'; st.className = 'form-msg err'; }
+    btn.disabled = false; btn.textContent = 'Send message';
+  });
+})();
+</script>
 </body>
 </html>
